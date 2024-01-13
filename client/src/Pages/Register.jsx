@@ -1,0 +1,169 @@
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../store/auth'
+import errorMsg from '../components/error.js'
+import { toast } from 'react-toastify'
+// import Axios from 'axios'
+
+const Register = () => {
+
+  const [user, setUser] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    password: ''
+  })
+
+  const navigate = useNavigate()
+  const { storeTokenInLs } = useAuth()
+
+  // lets tackle our handleInput
+  const handleInput = (e) => {
+    let name = e.target.name
+    let value = e.target.value
+
+    setUser(pre => {
+      return {
+        ...pre,
+        [name]: value
+      }
+    })
+  }
+
+  // handle fomr getFormSubmissionInfo
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setData()
+  }
+
+  // handle backend data calling
+
+  const setData = async () => {
+    // try {
+    //   const response = await Axios.post('http://localhost:3000/api/auth/register', user).then((res)=> {
+    //   console.log(res)
+    // })
+    // console.log(response)
+    // } catch (error) {
+    //   console.log(error)
+    // }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/auth/register`,
+        {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user)
+        }
+      )
+
+      const res_data = await response.json()
+      if (response.ok) {
+        toast.success(res_data.message)
+        storeTokenInLs(res_data.token)
+        setUser({
+          username: '',
+          email: '',
+          phone: '',
+          password: ''
+        })
+
+        navigate('/login')
+      } else {
+        toast.error(res_data[errorMsg(res_data)])
+      }
+
+    } catch (error) {
+      toast.error(error)
+    }
+  }
+
+
+  return (
+    <>
+      <section>
+        <main>
+          <div className="section-registration">
+            <div className="container grid grid-two-cols">
+              <div className="registration-image">
+                <img
+                  src="/images/register.png"
+                  alt="register img"
+                  width='500'
+                  height='500'
+                />
+              </div>
+              {/* let tackle register form */}
+              <div className="registration-form">
+                <h1 className="main-heading mb-3">registration Form</h1>
+                <br />
+
+                <form onSubmit={handleSubmit}>
+                  <div>
+                    <label htmlFor="username">username</label>
+                    <input
+                      type="text"
+                      name='username'
+                      placeholder='username'
+                      id='username'
+                      required
+                      autoComplete='off'
+                      value={user.username}
+                      onChange={handleInput}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email">email</label>
+                    <input
+                      type="email"
+                      name='email'
+                      placeholder='email'
+                      id='email'
+                      required
+                      autoComplete='off'
+                      value={user.email}
+                      onChange={handleInput}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone">phone</label>
+                    <input
+                      type="number"
+                      name='phone'
+                      placeholder='phone'
+                      id='phone'
+                      required
+                      autoComplete='off'
+                      value={user.phone}
+                      onChange={handleInput}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password">password</label>
+                    <input
+                      type="password"
+                      name='password'
+                      placeholder='password'
+                      id='password'
+                      required
+                      autoComplete='off'
+                      value={user.password}
+                      onChange={handleInput}
+                    />
+                  </div>
+                  <br />
+                  <button type='submit' className='btn btn-submit'>Register Now</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </section>
+    </>
+  )
+}
+
+export default Register

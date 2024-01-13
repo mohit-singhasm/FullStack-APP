@@ -1,0 +1,11 @@
+footer {
+    padding: 3.2rem;
+    text-align: center;
+    background-color: var(--btn-color);
+    margin-top: auto;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    /* visibility: hidden; */
+}
